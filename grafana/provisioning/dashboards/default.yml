@@ -1,0 +1,21 @@
+# Tells Grafana to load every dashboard JSON it finds in the mounted folder.
+# Edit the JSON in the repo, restart (or wait 30s), and Grafana picks it up.
+
+apiVersion: 1
+
+providers:
+  - name: demo-dashboards
+    orgId: 1
+    folder: Demo
+    type: file
+    disableDeletion: false
+    # Re-scan the folder on this interval so edits to the repo show up without
+    # a restart.
+    updateIntervalSeconds: 30
+    # true = you can also tweak panels in the UI for experiments. Set it to
+    # false once the dashboard is a source-controlled artifact, or your UI
+    # edits silently disappear on the next rescan.
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

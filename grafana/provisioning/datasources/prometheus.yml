@@ -1,0 +1,21 @@
+# Declares the Prometheus data source at Grafana startup, so you never have to
+# add it by hand in Connections -> Data sources.
+#
+# Set `uid` explicitly. If you leave it out Grafana invents a random one, and
+# any provisioned dashboard that hard-codes "prometheus" breaks with
+# "Data source with UID ... not found".
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus          # referenced by every panel in demo-app.json
+    access: proxy            # Grafana's backend does the querying, not the browser
+    url: http://prometheus:9090   # compose service name, not localhost
+    isDefault: true
+    editable: false
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s      # mirrors Prometheus' scrape_interval
+      manageAlerts: true

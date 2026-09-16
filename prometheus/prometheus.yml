@@ -1,0 +1,41 @@
+# Prometheus configuration.
+#
+# Prometheus is a pull-based system: it does not receive metrics, it goes and
+# fetches them over HTTP on a schedule. Everything below is about answering
+# two questions - "how often?" (global) and "from whom?" (scrape_configs).
+
+global:
+  # How often to fetch each target. Also the resolution of your data: you
+  # cannot ask for a finer-grained rate() than this.
+  scrape_interval: 15s
+
+  # How often to evaluate recording/alerting rules (none defined here yet).
+  evaluation_interval: 15s
+
+  # Attached to every series this server sends to any remote store. Useful
+  # the moment you have more than one Prometheus.
+  external_labels:
+    monitor: demo
+
+# ---------------------------------------------------------------------------
+# Scrape targets. Each job is one group of things that are scraped the same
+# way. Inside a compose network, service names resolve as hostnames, which is
+# why "app:8000" below works.
+# ---------------------------------------------------------------------------
+scrape_configs:
+  # Prometheus monitors itself here, so you can always answer "is monitoring
+  # healthy?" without a second system.
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: demo-app
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["app:8000"]
+        labels:
+          # Labels added here are attached to every series from this target.
+          # Keep the set small - every distinct combination multiplies your
+          # time series count.
+          service: demo-app
+          env: demo
