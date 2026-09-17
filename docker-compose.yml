@@ -1,17 +1,6 @@
-# Prometheus + Grafana + an instrumented demo app, in one command:
-#
-#   docker compose up -d --build
-#
-# Then open http://localhost:9090 (Prometheus) and http://localhost:3000
-# (Grafana, admin/admin - already logged in nowhere, but the datasource and
-# the "Demo App" dashboard are provisioned for you).
-
 name: prometheus-grafana-demo
 
 services:
-  # -------------------------------------------------------------------------
-  # The thing being monitored. Exposes /metrics on port 8000.
-  # -------------------------------------------------------------------------
   app:
     build: ./app
     container_name: demo-app
@@ -19,15 +8,9 @@ services:
       PORT: "8000"
       APP_VERSION: "1.0.0"
     ports:
-      # Published on the host purely so you can curl it yourself:
-      #   curl http://localhost:8000/metrics
       - "8000:8000"
     restart: unless-stopped
 
-  # -------------------------------------------------------------------------
-  # Generates traffic so the graphs are not flat the second you open Grafana.
-  # Same image, different entrypoint.
-  # -------------------------------------------------------------------------
   loadgen:
     build: ./app
     container_name: demo-loadgen
@@ -38,19 +21,13 @@ services:
       - app
     restart: unless-stopped
 
-  # -------------------------------------------------------------------------
-  # Scrapes `app` every 15s and stores the samples on a local TSDB.
-  # -------------------------------------------------------------------------
   prometheus:
     image: prom/prometheus:v3.5.0
     container_name: demo-prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
-      # How much history to keep. Demo-friendly default; default upstream is 15d.
       - --storage.tsdb.retention.time=15d
-      # Lets you hot-reload prometheus.yml with:
-      #   curl -X POST http://localhost:9090/-/reload
       - --web.enable-lifecycle
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -61,11 +38,6 @@ services:
       - app
     restart: unless-stopped
 
-  # -------------------------------------------------------------------------
-  # Queries Prometheus and draws the pictures. The datasource and dashboard
-  # are declared in ./grafana/provisioning so they exist on first boot -
-  # no clicking through the UI required.
-  # -------------------------------------------------------------------------
   grafana:
     image: grafana/grafana:12.3.0
     container_name: demo-grafana
@@ -74,7 +46,6 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
-      # Open straight onto our dashboard instead of the default home page.
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/demo-app.json
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
