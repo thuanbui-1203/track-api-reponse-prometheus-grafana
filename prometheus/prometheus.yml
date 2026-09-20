@@ -18,3 +18,19 @@ scrape_configs:
         labels:
           service: demo-app
           env: demo
+
+# # ── the new domain ──
+# - job_name: other-domain          # information of another domain
+#   scheme: https                   
+#   metrics_path: /metrics          # could be different endpoint
+#   scrape_interval: 30s            # optional per-job override
+#   scrape_timeout: 10s             # must be <= scrape_interval
+#   basic_auth:                     # if it needs auth
+#     username: metrics                                   # authentication
+#     password_file: /etc/prometheus/other-domain.pw
+#   static_configs:
+#     - targets: ["api.example.com:443"]                  # target measurement api
+#       labels:
+#         service: other-api
+#         env: prod
+#         region: ap-southeast-1

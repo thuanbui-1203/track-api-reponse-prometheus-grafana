@@ -7,6 +7,10 @@ can read the config files and know *why* they look the way they do.
 The whole stack is defined in this repo. Nothing here is a screenshot of someone else's
 dashboard — when you run it, every number you see comes from the app in `app/app.py`.
 
+> **Companion doc:** [`PROMQL.md`](PROMQL.md) is a standalone PromQL cookbook — the queries
+> you actually reach for, the mistakes that bite, and an appendix mapping every example to
+> this project's `demo_*` metrics.
+
 ---
 
 ## 0. Quick start
